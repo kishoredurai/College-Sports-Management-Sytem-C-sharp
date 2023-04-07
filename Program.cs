@@ -22,7 +22,7 @@ namespace College_Sports_Management_System
                         reader.Close();*/
 
             // AddSports(connection);
-            RemoveSport(connection);
+            AddScoreBoard(connection);
 
             connection.Close();
 
@@ -141,14 +141,14 @@ namespace College_Sports_Management_System
         {
 
             Console.WriteLine("The list of Tournament and Sports available are :");
-            String getsportsquerry = "select * from Tournament_Sport;";
+            String getsportsquerry = "SELECT ts.id ,t.tournament_name, s.sport_name FROM Tournament_Sport ts JOIN Tournament t ON ts.tournament_id = t.tournament_id JOIN Sports s ON ts.sport_id = s.sport_id; ";
             using (SqlCommand command = new SqlCommand(getsportsquerry, connection))
             {
-                Console.WriteLine("ID     Sports Name");
+                Console.WriteLine("ID         Tournament Name                       Sport Name");
                 SqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
-                    Console.WriteLine($"{reader.GetInt32(0)}        {reader.GetString(1).Trim()}   ");
+                    Console.WriteLine($"{reader.GetInt32(0)}        {reader.GetString(1).Trim()}          {reader.GetString(2).Trim()}");
 
                 }
                 reader.Close();
@@ -158,46 +158,71 @@ namespace College_Sports_Management_System
 
             Console.WriteLine();
 
-            Console.WriteLine("Enter Tournament Name:");
-            string TournamentName = Console.ReadLine();
-            Console.WriteLine("Enter Sports Id:");
-            int SportId = Convert.ToInt32(Console.ReadLine());
+            Console.WriteLine("Enter Tournament ID:");
+    
+            int Tournament_sportid = Convert.ToInt32(Console.ReadLine());
 
-            String InsertTournament = $"insert into Tournament values('{TournamentName}')";
-            using (SqlCommand command = new SqlCommand(InsertTournament, connection))
+            Console.WriteLine("Enter Team A Name:");
+
+            String TeamAName = Console.ReadLine();
+
+            Console.WriteLine("Enter Team B Name:");
+            String TeamBName = Console.ReadLine();
+
+            String InsertScoreboard = $"insert into Scoreboard(tournament_sport_id,team1_name,team2_name,result) values('{Tournament_sportid}','{TeamAName}','{TeamBName}','Match Not Started');";
+            using (SqlCommand command = new SqlCommand(InsertScoreboard, connection))
             {
                 command.BeginExecuteNonQuery();
-                Console.WriteLine("Tournament Created Succesfully");
+                Console.WriteLine("ScoreBoard Created Succesfully");
 
             }
+        
+         }
 
-            int Tournamentid = 0;
-            String GetIdOfTournament = $"select tournament_id from Tournament where tournament_name = '{TournamentName}'";
-            try
+        public static void ViewScoreBoard(SqlConnection connection)
+        {
+
+            Console.WriteLine("The List of Tournament and Sports available are :");
+            Console.WriteLine();
+            String getsportsquerry = "SELECT ts.id ,t.tournament_name, s.sport_name FROM Tournament_Sport ts JOIN Tournament t ON ts.tournament_id = t.tournament_id JOIN Sports s ON ts.sport_id = s.sport_id; ";
+            using (SqlCommand command = new SqlCommand(getsportsquerry, connection))
             {
-                using (SqlCommand command = new SqlCommand(GetIdOfTournament, connection))
+                Console.WriteLine("ID         Tournament Name                       Sport Name");
+                SqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
                 {
-                    SqlDataReader reader = command.ExecuteReader();
+                    Console.WriteLine($"{reader.GetInt32(0)}        {reader.GetString(1).Trim()}          {reader.GetString(2).Trim()}");
 
-                    while (reader.Read())
-                    {
-                        Tournamentid = reader.GetInt32(0);
-                    }
-                    reader.Close();
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
+                reader.Close();
+
             }
 
-            String InsertTournamentAndSports = $"insert into Tournament_Sport values({Tournamentid},{SportId})";
-            using (SqlCommand command = new SqlCommand(InsertTournamentAndSports, connection))
+
+            Console.WriteLine();
+
+            Console.WriteLine("Enter Tournament ID:");
+
+            int Tournament_sportid = Convert.ToInt32(Console.ReadLine());
+
+
+            String GetScoreboard = $"select * from Scoreboard";
+            using (SqlCommand command = new SqlCommand(getsportsquerry, connection))
             {
-                command.ExecuteReader();
-                Console.WriteLine("Tournament and Sports linked Succesfully");
+                Console.WriteLine("ID         Tournament Name                       Sport Name");
+                SqlDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    Console.WriteLine($"{reader.GetInt32(0)}        {reader.GetString(1).Trim()}          {reader.GetString(2).Trim()}");
+
+                }
+                reader.Close();
+
             }
 
         }
     }
+
+
+}
 }
